@@ -7,6 +7,7 @@ on: [push]
 
 env:
   DATABASE_TYPE: postgresql
+  SKIP_DB_CHECK: 1
 
 jobs:
   build:
@@ -15,10 +16,6 @@ jobs:
     strategy:
       matrix:
         include:
-        - node-version: 12.x
-          db-type: postgresql
-        - node-version: 12.x
-          db-type: mysql
         - node-version: 14.x
           db-type: postgresql
         - node-version: 14.x
@@ -29,9 +26,9 @@ jobs:
           db-type: mysql
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'

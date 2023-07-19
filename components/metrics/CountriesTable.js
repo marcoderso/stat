@@ -1,38 +1,39 @@
-import React from 'react';
-import MetricsTable from './MetricsTable';
-import { percentFilter } from 'lib/filters';
-import { FormattedMessage } from 'react-intl';
+import { useRouter } from 'next/router';
 import FilterLink from 'components/common/FilterLink';
 import useCountryNames from 'hooks/useCountryNames';
 import useLocale from 'hooks/useLocale';
+import useMessages from 'hooks/useMessages';
+import MetricsTable from './MetricsTable';
 
-export default function CountriesTable({ websiteId, onDataLoad, ...props }) {
+export function CountriesTable({ websiteId, ...props }) {
   const { locale } = useLocale();
   const countryNames = useCountryNames(locale);
+  const { formatMessage, labels } = useMessages();
+  const { basePath } = useRouter();
 
   function renderLink({ x: code }) {
     return (
-      <div className={locale}>
-        <FilterLink
-          id="country"
-          value={code}
-          label={
-            countryNames[code] ?? <FormattedMessage id="label.unknown" defaultMessage="Unknown" />
-          }
-        />
-      </div>
+      <FilterLink
+        id="country"
+        className={locale}
+        value={countryNames[code] && code}
+        label={countryNames[code]}
+      >
+        <img src={`${basePath}/images/flags/${code?.toLowerCase() || 'xx'}.png`} alt={code} />
+      </FilterLink>
     );
   }
 
   return (
     <MetricsTable
       {...props}
-      title={<FormattedMessage id="metrics.countries" defaultMessage="Countries" />}
+      title={formatMessage(labels.countries)}
       type="country"
-      metric={<FormattedMessage id="metrics.visitors" defaultMessage="Visitors" />}
+      metric={formatMessage(labels.visitors)}
       websiteId={websiteId}
-      onDataLoad={data => onDataLoad?.(percentFilter(data))}
       renderLabel={renderLink}
     />
   );
 }
+
+export default CountriesTable;
